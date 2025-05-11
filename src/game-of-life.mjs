@@ -5,6 +5,10 @@ export async function readRleFile(path) {
 
   const { hashLines, headerLine, patternLines } = parseFile(fileContent);
 
+  return writeToFile(hashLines, headerLine, patternLines);
+}
+
+function writeToFile(hashLines, headerLine, patternLines) {
   return hashLines.join("\n") + "\n" + headerLine + "\n" + patternLines.join("\n");
 }
 
