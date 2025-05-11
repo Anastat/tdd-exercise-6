@@ -83,7 +83,7 @@ export function cellsToPattern(cells) {
     }
 
     row = row.replace(/^b+/, "");
-    
+
     if (row) rows.push(row);
   }
 

@@ -1,6 +1,6 @@
 import { describe, test } from "vitest";
 import { expect } from "chai";
-import { main } from "../src/game-of-life.mjs";
+import { main, getNeighbours } from "../src/game-of-life.mjs";
 import path from "path";
 
 describe("Read file", () => {
@@ -13,3 +13,96 @@ describe("Read file", () => {
     );
   });
 });
+
+describe("Count neighbours", () => {
+  test("cell has correct neighbours", () => {
+    const testCell = { x: 5, y: 5 };
+    const result = getNeighbours(testCell);
+    const expected = new Set(["4,4", "5,4", "6,4", "4,5", "6,5", "4,6", "5,6", "6,6"]);
+
+    expect([...expected].sort()).to.deep.equal([...result].sort());
+  });
+
+  test("list of neighbours don't have cell itself", () => {
+    const result = getNeighbours({ x: 0, y: 0 });
+
+    const hasCell = result.some((neighbour) => neighbour.x === 0 && neighbour.y === 0);
+
+    expect(hasCell).to.be.false;
+  });
+});
+
+/*describe("Validate game rules", () => {
+  test("live cell with 0 neighbours dies", () => {
+    const cells = [{ x: 5, y: 5 }];
+    const next = step(cells);
+
+    expect(next).to.deep.equal([]);
+  });
+
+  test("live cell with 1 neighbours dies", () => {
+    const cells = [
+      { x: 0, y: 0 },
+      { x: 1, y: 0 },
+    ];
+
+    const next = step(cells);
+
+    expect(next).to.deep.equal([]);
+  });
+
+  test("live cell with 2 neighbours survives", () => {
+    const cells = [
+      { x: 0, y: 0 },
+      { x: 1, y: 0 },
+      { x: 0, y: 1 },
+    ];
+
+    const next = step(cells);
+    const nextSet = new Set(next.map(({x,y}) => `${x}, ${x}`))
+
+    expect(nextSet).to.include("0,0");
+  });
+
+  test("live cell with 3 neighbours survives", () => {
+    const cells = [
+      { x: 0, y: 0 },
+      { x: 1, y: 0 },
+      { x: 0, y: 1 },
+      { x: 1, y: 1 },
+    ];
+
+    const next = step(cells);
+    const nextSet = new Set(next.map(({x,y}) => `${x}, ${x}`))
+
+    expect(nextSet).to.include("0,0");
+  });
+
+  test("live cell with 4 neighbours dies", () => {
+    const cells = [
+      { x: 1, y: 1 },
+      { x: 0, y: 1 },
+      { x: 2, y: 1 },
+      { x: 1, y: 0 },
+      { x: 1, y: 2 },
+    ];
+
+    const next = step(cells);
+    const nextSet = new Set(next.map(({x,y}) => `${x}, ${x}`))
+
+    expect(nextSet).to.include("1,1");
+  });
+
+  test("dead cell with 3 neighbours becomes alive", () => {
+    const cells = [
+      { x: 0, y: 0 },
+      { x: 1, y: 0 },
+      { x: 2, y: 0 },
+    ];
+
+    const next = step(cells);
+    const nextSet = new Set(next.map(({x,y}) => `${x}, ${x}`))
+
+    expect(nextSet).to.include("1,1");
+  });
+});*/
