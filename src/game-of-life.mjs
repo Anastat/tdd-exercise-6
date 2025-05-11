@@ -4,12 +4,11 @@ import { parseContent } from "./parseContent.mjs";
 export async function main(path, iterations) {
   const fileContent = await fs.readFile(path, { encoding: "utf8" });
 
-  const { hashLines, headerLine, patternLines } = parseContent(fileContent);
+  const { hashLines, headerLine, patternLinesStr } = parseContent(fileContent);
 
-  return writeToFile(hashLines, headerLine, patternLines);
+  return writeToFile(hashLines, headerLine, patternLinesStr);
 }
 
-export function writeToFile(hashLines, headerLine, patternLines) {
-  return hashLines.join("\n") + "\n" + headerLine + "\n" + patternLines.join("\n");
+export function writeToFile(hashLines, headerLine, patternLinesStr) {
+  return hashLines.join("\n") + "\n" + headerLine + "\n" + patternLinesStr;
 }
-
