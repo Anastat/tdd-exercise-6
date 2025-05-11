@@ -1,6 +1,6 @@
 import { describe, test } from "vitest";
 import { expect } from "chai";
-import { parseContent, encodePattern, decodePattern } from "../src/parseContent.mjs";
+import { parseContent, encodePattern, decodePattern, patternToCells } from "../src/parseContent.mjs";
 
 const testContent = `#N Blinker
     #O John Conway
@@ -72,5 +72,56 @@ describe("Content encoding/decoding ", () => {
   test("decodes line correctly", async () => {
     expect(decodePattern("$")).to.be.equal("$");
     expect(decodePattern("3o2b$!")).to.be.equal("ooobb$!");
+  });
+});
+
+describe("Pattern to cells ", () => {
+  test("parse correctly pattern to cells", async () => {
+    const pattern = "2o$2o!";
+    const cells = patternToCells(pattern);
+
+    const expected = new Set([
+      { x: 0, y: 0 },
+      { x: 1, y: 0 },
+      { x: 0, y: 1 },
+      { x: 1, y: 1 },
+    ]);
+
+    for (const cell of expected) {
+      expect([...cells]).to.deep.include(cell);
+    }
+  });
+
+  test("ignores pattern after '!'", async () => {
+    const pattern = "2o$2o!oo";
+    const cells = patternToCells(pattern);
+
+    const expected = new Set([
+      { x: 0, y: 0 },
+      { x: 1, y: 0 },
+      { x: 0, y: 1 },
+      { x: 1, y: 1 },
+    ]);
+
+    for (const cell of expected) {
+      expect([...cells]).to.deep.include(cell);
+    }
+  });
+
+  test("parse correct result with dead cells", async () => {
+    const pattern = "bobo$3o";
+    const cells = patternToCells(pattern);
+
+    const expected = new Set([
+      { x: 1, y: 0 },
+      { x: 3, y: 0 },
+      { x: 0, y: 1 },
+      { x: 1, y: 1 },
+      { x: 2, y: 1 },
+    ]);
+
+    for (const cell of expected) {
+      expect([...cells]).to.deep.include(cell);
+    }
   });
 });

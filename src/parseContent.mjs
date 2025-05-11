@@ -32,3 +32,33 @@ export function encodePattern(pattern) {
 export function decodePattern(pattern) {
   return pattern.replace(/(\d+)(\D)/g, (_, count, char) => char.repeat(Number(count)));
 }
+
+export function patternToCells(pattern) {
+  const decoded = decodePattern(pattern);
+
+  const cells = new Set();
+  let x = 0,
+    y = 0;
+
+  for (const char of decoded) {
+    if (char === "o") {
+      cells.add(`${x}, ${y}`);
+      x++;
+    } else if (char === "b") {
+      x++;
+    } else if (char === "$") {
+      x = 0;
+      y++;
+    } else if (char === "!") {
+      break;
+    }
+  }
+
+  return new Set(
+    [...cells].map((cell) => {
+      const [x, y] = cell.split(",").map(Number);
+
+      return { x, y };
+    }),
+  );
+}
