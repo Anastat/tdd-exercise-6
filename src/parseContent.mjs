@@ -62,3 +62,30 @@ export function patternToCells(pattern) {
     }),
   );
 }
+
+export function cellsToPattern(cells) {
+  const cellSet = new Set([...cells].map((cell) => `${cell.x},${cell.y}`));
+  const xCells = Array.from(cells).map((cell) => cell.x);
+  const yCells = Array.from(cells).map((cell) => cell.y);
+
+  const minX = Math.min(...xCells, 0);
+  const maxX = Math.max(...xCells, 0);
+  const minY = Math.min(...yCells, 0);
+  const maxY = Math.max(...yCells, 0);
+
+  let rows = [];
+
+  for (let y = minY; y <= maxY; y++) {
+    let row = "";
+
+    for (let x = minX; x <= maxX; x++) {
+      row += cellSet.has(`${x},${y}`) ? "o" : "b";
+    }
+
+    row = row.replace(/^b+/, "");
+    
+    if (row) rows.push(row);
+  }
+
+  return encodePattern(rows.join("$") + "!");
+}

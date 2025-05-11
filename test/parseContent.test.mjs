@@ -1,6 +1,6 @@
 import { describe, test } from "vitest";
 import { expect } from "chai";
-import { parseContent, encodePattern, decodePattern, patternToCells } from "../src/parseContent.mjs";
+import { parseContent, encodePattern, decodePattern, patternToCells, cellsToPattern } from "../src/parseContent.mjs";
 
 const testContent = `#N Blinker
     #O John Conway
@@ -123,5 +123,62 @@ describe("Pattern to cells ", () => {
     for (const cell of expected) {
       expect([...cells]).to.deep.include(cell);
     }
+  });
+
+  describe("Cells to pattern parse correctly ", () => {
+    test("cells to pattern ", async () => {
+      const cells = new Set([
+        { x: 0, y: 0 },
+        { x: 1, y: 0 },
+        { x: 0, y: 1 },
+        { x: 1, y: 1 },
+      ]);
+
+      const pattern = cellsToPattern(cells);
+
+      expect(pattern).to.be.equal("2o$2o!");
+    });
+
+    test("one cell to pattern ", async () => {
+      const cells = new Set([
+        { x: 6, y: 7}
+      ]);
+
+      const pattern = cellsToPattern(cells)
+
+      expect(pattern).to.be.equal("o!")
+    });
+
+    test("no cells ", async () => {
+      const cells = new Set();
+
+      const pattern = cellsToPattern(cells)
+
+      expect(pattern).to.be.equal("!")
+    });
+
+    test("cells in same row", async () => {
+      const cells = new Set([
+        { x: 0, y: 0},
+        { x: 1, y: 0},
+        { x: 2, y: 0}
+      ]);
+
+      const pattern = cellsToPattern(cells)
+
+      expect(pattern).to.be.equal("3o!")
+    });
+
+    test("cells in same column", async () => {
+      const cells = new Set([
+        { x: 0, y: 0},
+        { x: 0, y: 1},
+        { x: 0, y: 2}
+      ]);
+
+      const pattern = cellsToPattern(cells)
+
+      expect(pattern).to.be.equal("o$o$o!")
+    });
   });
 });
