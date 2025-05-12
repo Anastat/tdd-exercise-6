@@ -5,6 +5,19 @@ const DEAD_CELL = "b";
 const END_LINE = "$";
 const END = "!";
 
+export function fileContentToWorld(data) {
+  let lines = parseContent(data).patternLinesStr;
+
+  return { cells: patternToCells(lines) };
+}
+
+export function worldToFile(world) {
+  let pattern = cellsToPattern(world);
+  let headerLine = `x = ${pattern.width}, y = ${pattern.height}, rule = ${RULE}`;
+
+  return [headerLine, pattern.pattern].join("\n");
+}
+
 export function parseContent(content) {
   if (!content) throw Error("RLE file is empty");
 
@@ -92,5 +105,5 @@ export function cellsToPattern(cells) {
     if (row) rows.push(row);
   }
 
-  return encodePattern(rows.join(END_LINE) + END);
+  return { width: maxX - minX + 1, height: maxY - minY + 1, pattern: encodePattern(rows.join(END_LINE) + END) };
 }

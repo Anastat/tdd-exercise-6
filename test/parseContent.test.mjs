@@ -1,6 +1,14 @@
 import { describe, test } from "vitest";
 import { expect } from "chai";
-import { parseContent, encodePattern, decodePattern, patternToCells, cellsToPattern } from "../src/parseContent.mjs";
+import {
+  parseContent,
+  encodePattern,
+  decodePattern,
+  patternToCells,
+  cellsToPattern,
+  fileContentToWorld,
+  worldToFile,
+} from "../src/parseContent.mjs";
 
 const testContent = `#N Blinker
     #O John Conway
@@ -8,6 +16,36 @@ const testContent = `#N Blinker
     #C www.conwaylife.com/wiki/index.php?title=Blinker
     x = 3, y = 1, rule = B3/S23
     3o!`;
+
+describe("Parse file ", () => {
+  test("content correctly converted to cells ", async () => {
+    const result = fileContentToWorld(testContent);
+    const liveCells = new Set([...result.cells].map(({ x, y }) => `${x},${y}`));
+
+    const expected = [
+      { x: 0, y: 0 },
+      { x: 1, y: 0 },
+      { x: 2, y: 0 },
+    ];
+
+    for (const { x, y } of expected) {
+      expect(liveCells).to.include(`${x},${y}`);
+    }
+  });
+
+  test("world correctly converted to file content", async () => {
+    const world = [
+      { x: 0, y: 0 },
+      { x: 1, y: 0 },
+      { x: 2, y: 0 },
+    ];
+
+    const result = worldToFile(world);
+
+    expect(result).to.include("3o!");
+    expect(result).to.include("x = 3, y = 1, rule = B3/S23");
+  });
+});
 
 describe("Parse file content ", () => {
   test("throws an error if file is empty ", async () => {
@@ -136,49 +174,47 @@ describe("Pattern to cells ", () => {
 
       const pattern = cellsToPattern(cells);
 
-      expect(pattern).to.be.equal("2o$2o!");
+      expect(pattern.pattern).to.be.equal("2o$2o!");
     });
 
     test("one cell to pattern ", async () => {
-      const cells = new Set([
-        { x: 6, y: 7}
-      ]);
+      const cells = new Set([{ x: 6, y: 7 }]);
 
-      const pattern = cellsToPattern(cells)
+      const pattern = cellsToPattern(cells);
 
-      expect(pattern).to.be.equal("o!")
+      expect(pattern.pattern).to.be.equal("o!");
     });
 
     test("no cells ", async () => {
       const cells = new Set();
 
-      const pattern = cellsToPattern(cells)
+      const pattern = cellsToPattern(cells);
 
-      expect(pattern).to.be.equal("!")
+      expect(pattern.pattern).to.be.equal("!");
     });
 
     test("cells in same row", async () => {
       const cells = new Set([
-        { x: 0, y: 0},
-        { x: 1, y: 0},
-        { x: 2, y: 0}
+        { x: 0, y: 0 },
+        { x: 1, y: 0 },
+        { x: 2, y: 0 },
       ]);
 
-      const pattern = cellsToPattern(cells)
+      const pattern = cellsToPattern(cells);
 
-      expect(pattern).to.be.equal("3o!")
+      expect(pattern.pattern).to.be.equal("3o!");
     });
 
     test("cells in same column", async () => {
       const cells = new Set([
-        { x: 0, y: 0},
-        { x: 0, y: 1},
-        { x: 0, y: 2}
+        { x: 0, y: 0 },
+        { x: 0, y: 1 },
+        { x: 0, y: 2 },
       ]);
 
-      const pattern = cellsToPattern(cells)
+      const pattern = cellsToPattern(cells);
 
-      expect(pattern).to.be.equal("o$o$o!")
+      expect(pattern.pattern).to.be.equal("o$o$o!");
     });
   });
 });
