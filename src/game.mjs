@@ -25,7 +25,7 @@ export function step(cells) {
   }
 
   const nextGen = [];
-  const aliveCells = new Set(cells.map(({ x, y }) => `${x},${y}`));
+  const aliveCells = new Set([...cells].map(({ x, y }) => `${x},${y}`));
 
   for (const [key, count] of neighbourCounts.entries()) {
     const isAlive = aliveCells.has(key);
