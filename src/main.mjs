@@ -12,4 +12,3 @@ export async function main(path, iterations) {
 export function writeToFile(hashLines, headerLine, patternLinesStr) {
   return hashLines.join("\n") + "\n" + headerLine + "\n" + patternLinesStr;
 }
-
