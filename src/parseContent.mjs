@@ -1,12 +1,17 @@
 const RULE = "B3/S23";
+const HASH = "#";
+const ALIVE_CELL = "o";
+const DEAD_CELL = "b";
+const END_LINE = "$";
+const END = "!";
 
 export function parseContent(content) {
   if (!content) throw Error("RLE file is empty");
 
   const lines = content.split(/\r?\n/);
   const trimmedLines = lines.map((line) => line.trim()).filter((line) => line !== "");
-  const hashLines = trimmedLines.filter((line) => line.startsWith("#"));
-  const [headerLine, ...patternLines] = trimmedLines.filter((line) => !line.startsWith("#"));
+  const hashLines = trimmedLines.filter((line) => line.startsWith(HASH));
+  const [headerLine, ...patternLines] = trimmedLines.filter((line) => !line.startsWith(HASH));
 
   if (!headerLine.includes("x") && !headerLine.includes("y")) throw Error("File doesn't contain header");
 
@@ -41,15 +46,15 @@ export function patternToCells(pattern) {
     y = 0;
 
   for (const char of decoded) {
-    if (char === "o") {
+    if (char === ALIVE_CELL) {
       cells.add(`${x}, ${y}`);
       x++;
-    } else if (char === "b") {
+    } else if (char === DEAD_CELL) {
       x++;
-    } else if (char === "$") {
+    } else if (char === END_LINE) {
       x = 0;
       y++;
-    } else if (char === "!") {
+    } else if (char === END) {
       break;
     }
   }
@@ -79,7 +84,7 @@ export function cellsToPattern(cells) {
     let row = "";
 
     for (let x = minX; x <= maxX; x++) {
-      row += cellSet.has(`${x},${y}`) ? "o" : "b";
+      row += cellSet.has(`${x},${y}`) ? ALIVE_CELL : DEAD_CELL;
     }
 
     row = row.replace(/^b+/, "");
@@ -87,5 +92,5 @@ export function cellsToPattern(cells) {
     if (row) rows.push(row);
   }
 
-  return encodePattern(rows.join("$") + "!");
+  return encodePattern(rows.join(END_LINE) + END);
 }
